@@ -147,8 +147,8 @@ class ValueWithUnit(object):
     def __repr__(self):
         return self.to_str()
 
-    def to_str(self, precision=5):
-        if self._unit in _unit_display_name_map:
+    def to_str(self, precision=5, raw_si_units=False):
+        if not raw_si_units and self._unit in _unit_display_name_map:
             unit_name = _unit_display_name_map[self._unit].text
         else:
             unit_name = f"{self._unit}"
@@ -181,7 +181,7 @@ deka = _scale(1)
 dezi = _scale(-1)
 centi = _scale(-2)
 milli = _scale(-3)
-mikro = _scale(-6)
+mikro = µ = _scale(-6)
 nano = _scale(-9)
 piko = _scale(-12)
 femto = _scale(-15)
@@ -207,6 +207,7 @@ Hz = 1/s
 
 # Common scalings of base units
 cm = centi*m
+µm = µ*m
 nm = nano*m
 km = kilo*m
 
@@ -244,5 +245,6 @@ _unit_display_name_map = dict(
         (F, "F", "Farad"),
         (H, "H", "Henry"),
         (Hz, "Hz", "Hertz"),
+        (V/m, "V/m", "E-Field"),
     ]
 )
