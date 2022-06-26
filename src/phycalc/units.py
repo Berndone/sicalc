@@ -2,6 +2,7 @@ from collections import namedtuple
 import enum
 import typing as t
 import numpy as np
+from . import _frap
 
 
 class BaseUnit(enum.Enum):
@@ -57,10 +58,14 @@ class CombinedUnit(object):
         return new_units
 
     def __pow__(self, exponent):
-        assert isinstance(exponent, int)
+        if isinstance(exponent, int):
+            exponent = _frap.Fraction(exponent, 1)
+        if isinstance(exponent, float):
+            exponent = _frap.frap(exponent)
+        assert isinstance(exponent, _frap.Fraction)
         new_units = CombinedUnit()
         for unit, count in self._units.items():
-            new_units._set(unit, count * exponent)
+            new_units._set(unit, count * exponent.a // exponent.b)
         return new_units
 
     def __str__(self):
