@@ -2,21 +2,9 @@
 Some tools to make physic class easier by handling the SI Units.
 
 ## Installation
-You can directly install the package. Note that versions are not maintained yet. To upgrade, use the `--force-reinstall`-Option.
+The installation works simply via pip:
 ```
-# Install
-pip install git+https://github.com/berndone/sicalc.git
-# Update
-pip install --upgrade --force-reinstall git+https://github.com/berndone/sicalc.git
-```
-
-You can also clone the repo, (make local changes) and let python know where to find the sources. 
-```
-# Install
-git clone git@github.com:Berndone/phycalc.git /path/to/sicalc
-pip install --editable /path/to/sicalc
-# Update
-(cd /path/to/sicalc) && git pull
+pip install sicalc
 ```
 
 ## Usage
