@@ -1,29 +1,29 @@
-# P(h)y-Calc
-Some tools to make physic class easier.
+# Sicalc
+Some tools to make physic class easier by handling the SI Units.
 
 ## Installation
 You can directly install the package. Note that versions are not maintained yet. To upgrade, use the `--force-reinstall`-Option.
 ```
 # Install
-pip install git+https://github.com/berndone/phycalc.git
+pip install git+https://github.com/berndone/sicalc.git
 # Update
-pip install --upgrade --force-reinstall git+https://github.com/berndone/phycalc.git
+pip install --upgrade --force-reinstall git+https://github.com/berndone/sicalc.git
 ```
 
 You can also clone the repo, (make local changes) and let python know where to find the sources. 
 ```
 # Install
-git clone git@github.com:Berndone/phycalc.git /path/to/phycalc
-pip install --editable /path/to/phycalc
+git clone git@github.com:Berndone/phycalc.git /path/to/sicalc
+pip install --editable /path/to/sicalc
 # Update
-(cd /path/to/phycalc) && git pull
+(cd /path/to/sicalc) && git pull
 ```
 
 ## Usage
 Simply import the units you need and calculate with them!
 A number (float/int) will be associated with the unit by multiplication giving an instance of `ValueWithUnit`. By the multiplication of two of those instances we get a new `ValueWithUnit`-instance which keeps track of the multiplied units. 
 ```
-from phycalc.units import m, s
+from sicalc.units import m, s
 velocity = 20_000 * m / s
 t = 60*s
 distance = velocity * t
@@ -32,7 +32,7 @@ print(distance) # --> <1.20000E+06, m>
 
 The common unit prefixes are defined aswell.
 ```
-from phycalc.units import m, s, kilo
+from sicalc.units import m, s, kilo
 km = kilo*m
 velocity = 20 * km / s
 t = 60*s
@@ -42,14 +42,14 @@ print(distance) # --> <1.20000E+06, m>
 
 Most constants are defined by the package too:
 ```
-from phycalc.units import s
-from phycalc.constants import c
+from sicalc.units import s
+from sicalc.constants import c
 print(5*s*c)
 ```
 
 When adding two values, make sure those are of the same unit.
 ``` 
-from phycalc.units import m, s, kg, N
+from sicalc.units import m, s, kg, N
 F1 = 5*N
 F2 = kg*m/s**2
 P = kg*m/s
@@ -57,10 +57,10 @@ F = F1 + F2 # correct
 F + P # wrong, will give an Exception :(
 ```
 
-Using functions like `math.sqrt` wont work. Therefor common functions are provided in `pychalc.func`. Note that these functions check unit behaviour too:
+Using functions like `math.sqrt` wont work. Therefor common functions are provided in `sicalc.func`. Note that these functions check unit behaviour too:
 ``` 
-from phycalc.units import m
-from phycalc.func import sqrt, ln
+from sicalc.units import m
+from sicalc.func import sqrt, ln
 d1 = 2*m
 d2 = 3*m
 

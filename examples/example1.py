@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
 # Import the units, constants and functions we want to use.
-from phycalc.units import (
+from sicalc.units import (
     cm, TW, C, N, Tesla, m, mikro
 )
-from phycalc.constants import (
+from sicalc.constants import (
     e0, c, u0, pi, e, electron_mass
 )
-from phycalc.func import (
+from sicalc.func import (
     lambda_to_f, ln, ValueWithUnit, sqrt
 )
 
