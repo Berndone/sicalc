@@ -10,6 +10,8 @@ class BaseUnit(enum.Enum):
     m = "m"
     s = "s"
     A = "A"
+    K = "K"
+    mol = "mol"
 
 
 class CombinedUnit(object):
@@ -78,9 +80,20 @@ class CombinedUnit(object):
 
 
 class ValueWithUnit(object):
-    def __init__(self, num: t.Union[int, float], unit: CombinedUnit):
+    def __init__(
+        self, num: t.Union[int, float], unit: CombinedUnit,
+        error: t.Union[int, float] = 0,
+    ):
         self._num = num
         self._unit = unit
+        self._error = error
+
+    def set_error(self, error: t.Union[int, float, "ValueWithUnit"]):
+        if isinstance(error, ValueWithUnit):
+            self.assert_unit(self, error)
+            self._error = error._num
+        else:
+            self._error = error
 
     @staticmethod
     def assert_unit(a, b):
@@ -98,21 +111,34 @@ class ValueWithUnit(object):
 
     def __add__(self, other):
         self.assert_unit(self, other)
-        return ValueWithUnit(self._num + other._num, self._unit)
+        return ValueWithUnit(
+            self._num + other._num, self._unit,
+            self._addition_error(self, other),
+        )
 
     def __sub__(self, other):
         self.assert_unit(self, other)
-        return ValueWithUnit(self._num - other._num, self._unit)
+        return ValueWithUnit(
+            self._num - other._num, self._unit,
+            self._addition_error(self, other),
+        )
+
+    @staticmethod
+    def _addition_error(self, other):
+        return (self._error**2 + other._error**2)**0.5
 
     def __mul__(self, other):
         unit = self._unit
         if isinstance(other, ValueWithUnit):
             unit = unit * other._unit
             num = other._num
+            error = other._error
         else:
             num = other
+            error = 0
         value = self._num * num
-        return ValueWithUnit(value, unit)
+        error = ((error*self._num)**2 + (self._error * num)**2)**0.5
+        return ValueWithUnit(value, unit, error)
 
     def __rmul__(self, other):
         return self*other
@@ -122,32 +148,38 @@ class ValueWithUnit(object):
         if isinstance(other, ValueWithUnit):
             unit = unit / other._unit
             num = other._num
+            error = other._error
         else:
             num = other
+            error = 0
         value = self._num / num
-        return ValueWithUnit(value, unit)
+        error = ((self._error / num)**2 + (value * error / num)**2)**0.5
+        return ValueWithUnit(value, unit, error)
 
     def __rtruediv__(self, other):
         # Its other/self here.
         if isinstance(other, ValueWithUnit):
             unit = other._unit / unit
             num = other._num
+            error = other._error
         else:
             unit = CombinedUnit() / self._unit
             num = other
+            error = 0
         value = num / self._num
-        return ValueWithUnit(value, unit)
+        error = ((error / self._num)**2 +
+                 (value * self._error / self._num)**2)**0.5
+        return ValueWithUnit(value, unit, error)
 
     def __pow__(self, exponent):
         return ValueWithUnit(
             self._num ** exponent,
             self._unit ** exponent,
+            exponent * self._error * (self._num ** (exponent - 1)),
         )
 
     def sqrt(self):
-        unit = self._unit.sqrt()
-        num = np.sqrt(self._num)
-        return ValueWithUnit(num, unit)
+        return self ** 0.5
 
     def __repr__(self):
         return self.to_str()
@@ -157,7 +189,28 @@ class ValueWithUnit(object):
             unit_name = _unit_display_name_map[self._unit].text
         else:
             unit_name = f"{self._unit}"
-        return f"<{self._num:.{precision}E}, {unit_name}>"
+
+        if self._num >= 1:
+            e = int(np.log10(self._num)) + 1
+            if e % 3 == 0:
+                e -= 3
+            else:
+                e -= e % 3
+        else:
+            e = int(np.log10(1/self._num)) + 1
+            e += 3 - (e % 3)
+            e *= -1
+        b = 10**e
+        num = f"{self._num / b:{precision + 4}.{precision}f}E{e:+03}"
+
+        error = str()
+        if self._error:
+            error = f" ±{self._error / b:{precision + 4}.{precision}f}E{e:+03}"
+
+        return f"<{num}{error}, {unit_name}>"
+
+    def get_raw_value(self):
+        return self._num
 
 
 # si base units
@@ -166,6 +219,8 @@ kg = killogram = ValueWithUnit(1, CombinedUnit(BaseUnit.kg))
 s = seconds = ValueWithUnit(1, CombinedUnit(BaseUnit.s))
 A = Ampere = ValueWithUnit(1, CombinedUnit(BaseUnit.A))
 m = meter = ValueWithUnit(1, CombinedUnit(BaseUnit.m))
+K = Kelvin = ValueWithUnit(1, CombinedUnit(BaseUnit.K))
+mol = ValueWithUnit(1, CombinedUnit(BaseUnit.mol))
 
 
 def _scale(exp): return 10**exp
@@ -212,6 +267,7 @@ Hz = 1/s
 
 # Common scalings of base units
 cm = centi*m
+mm = milli*m
 µm = µ*m
 nm = nano*m
 km = kilo*m
@@ -238,6 +294,8 @@ _unit_display_name_map = dict(
         (s, "s", "Second"),
         (A, "A", "Amper"),
         (kg, "kg", "Kilogram"),
+        (K, "K", "Kelvin"),
+        (mol, "mol", "Mol"),
         (N, "N", "Newton"),
         (Pa, "Pa", "Pascal"),
         (J, "J", "Joul"),

@@ -60,3 +60,16 @@ print(sqrt(d1*d2)) # --> The parameter of sqrt requires, that all power of units
 print(ln(d1)) # --> ln cant handle a unit
 print(sqrt(d1)) # --> What should be the square-root of the unit "meter"??
 ```
+
+### numpy support
+Numpy arrays seem to work as values too. Note that not all functions are tested yet.
+```
+from sicalc.units import m, s
+import numpy as np
+d = np.array([1, 2, 3])*m
+t = np.array([4, 5, 6])*s
+v = d/t
+print(v)
+# Output: [<250.00000E-03, m^1*s^-1> <400.00000E-03, m^1*s^-1>
+ <500.00000E-03, m^1*s^-1>]
+```

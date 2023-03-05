@@ -7,3 +7,4 @@ my0 = u0 = µ0 = 4*pi*1e-7 * N/(A*A)
 speed_of_light = c = (1/(e0*u0).sqrt())
 e = elementary_charge = 1.602_176_634e-19*C
 electron_mass = 9.1093837e-31*kg
+R = 8.31446261815324
