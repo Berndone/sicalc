@@ -21,8 +21,7 @@ def sqrt(value):
 
 def ln(x):
     if isinstance(x, units.ValueWithUnit):
-        units.ValueWithUnit.assert_unit(x, units.NoUnit)
-        x = x._num
+        return x.log()
     return np.log(x)
 
 

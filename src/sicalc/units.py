@@ -190,15 +190,15 @@ class ValueWithUnit(object):
         else:
             unit_name = f"{self._unit}"
 
-        if self._num >= 1:
-            e = int(np.log10(self._num)) + 1
+        if abs(self._num) >= 1:
+            e = int(np.log10(abs(self._num))) + 1
             if e % 3 == 0:
                 e -= 3
             else:
                 e -= e % 3
         else:
-            e = int(np.log10(1/self._num)) + 1
-            e += 3 - (e % 3)
+            e = int(np.log10(abs(1/self._num))) + 1
+            e += 2 - ((e-1) % 3)
             e *= -1
         b = 10**e
         num = f"{self._num / b:{precision + 4}.{precision}f}E{e:+03}"
@@ -211,6 +211,10 @@ class ValueWithUnit(object):
 
     def get_raw_value(self):
         return self._num
+
+    def log(self):
+        self.assert_unit(self, NoUnit)
+        return np.log(self._num)
 
 
 # si base units
@@ -254,6 +258,7 @@ yokto = _scale(-24)
 ρ = density = kg/(m**3)
 N = Newton = kg*m/(s*s)
 Pa = pascal = N/(m**2)
+bar = 100_000*pascal
 J = Joule = N*m
 W = Watt = J/s
 C = Coulumb = A*s
@@ -271,6 +276,9 @@ mm = milli*m
 µm = µ*m
 nm = nano*m
 km = kilo*m
+
+L = (10*cm)**3
+
 
 min = s/60
 h = min/60

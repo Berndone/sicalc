@@ -12,8 +12,7 @@ class Fraction(object):
 
 
 def frap(x, maxden=1000) -> Fraction:
-    m = np.ndarray((2, 2), np.int)
-    startx = x
+    m = np.ndarray((2, 2), int)
     m[0][0] = m[1][1] = 1
     m[0][1] = m[1][0] = 0
     ai = int(x)
